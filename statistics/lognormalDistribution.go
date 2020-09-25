@@ -15,7 +15,7 @@ func (n LogNormalDistribution) CDF(value float64) float64 {
 	z := NormalDistribution{Mean: n.Mean, StandardDeviation: n.StandardDeviation}
 	return z.CDF(math.Log(value))
 }
-func (n NormalDistribution) PDF(value float64) float64 {
+func (n LogNormalDistribution) PDF(value float64) float64 {
 	z := NormalDistribution{Mean: n.Mean, StandardDeviation: n.StandardDeviation}
 	return z.PDF(math.Log(value))
 }
