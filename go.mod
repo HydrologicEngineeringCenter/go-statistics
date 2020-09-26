@@ -1,3 +1,3 @@
-module github.com/HenryGeorgist/go-statistics/statistics
+module github.com/HenryGeorgist/go-statistics
 
 go 1.15
