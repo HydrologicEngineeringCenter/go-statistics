@@ -43,7 +43,7 @@ func (pm *productMoments) AddObservation(value float64) {
 			pm.min = value
 		}
 		pm.sampleSize += 1
-		pm.sampleVariance = ((float64((pm.sampleSize-2)/(pm.sampleSize-1)) * pm.sampleVariance) + (math.Pow((value-pm.mean), 2))/float64(pm.sampleSize))
+		pm.sampleVariance = (((float64(pm.sampleSize-2) / float64(pm.sampleSize-1)) * pm.sampleVariance) + (math.Pow((value-pm.mean), 2))/float64(pm.sampleSize))
 		pm.mean = pm.mean + ((value - pm.mean) / float64(pm.sampleSize))
 	}
 }

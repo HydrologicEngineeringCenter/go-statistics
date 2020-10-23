@@ -51,7 +51,7 @@ func TestAddObservationNormalDist(t *testing.T) {
 	ih := Init(.01, -1.0, 1.0)
 	n := statistics.NormalDistribution{Mean: 0, StandardDeviation: 1}
 	//var wg sync.WaitGroup
-	iterations := 1000000000
+	iterations := 1000
 	//wg.Add(iterations)
 	for i := 0; i < iterations; i++ {
 		//defer wg.Done()
