@@ -50,10 +50,22 @@ func TestAddObservationBelowLower(t *testing.T) {
 func TestAddObservationNormalDist(t *testing.T) {
 	ih := Init(.01, -1.0, 1.0)
 	n := statistics.NormalDistribution{Mean: 0, StandardDeviation: 1}
-	for i := 0; i < 100000; i++ {
+	//var wg sync.WaitGroup
+	iterations := 1000000000
+	//wg.Add(iterations)
+	for i := 0; i < iterations; i++ {
+		//defer wg.Done()
+		//go ih.AddObservation(n.InvCDF(rand.Float64())) //i think the appending of slices in the add observation method on inlinehistogram causes the problems
 		ih.AddObservation(n.InvCDF(rand.Float64()))
 	}
+	//wg.Wait()
 	for _, val := range ih.GetBins() {
 		fmt.Println(val)
 	}
+	fmt.Println(fmt.Sprintf("numbins %d", len(ih.GetBins())))
+	fmt.Println(fmt.Sprintf("min %f", ih.pm.GetMin()))
+	fmt.Println(fmt.Sprintf("max %f", ih.pm.GetMax()))
+	fmt.Println(fmt.Sprintf("mean %f", ih.pm.GetMean()))
+	fmt.Println(fmt.Sprintf("variance %f", ih.pm.GetSampleVariance()))
+	fmt.Println(fmt.Sprintf("sample size %d", ih.pm.GetSampleSize()))
 }

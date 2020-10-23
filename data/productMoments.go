@@ -2,33 +2,52 @@ package data
 
 import "math"
 
-type ProductMoments struct {
-	Min            float64
-	Max            float64
-	SampleSize     int64
-	Mean           float64
-	SampleVariance float64
+type productMoments struct {
+	min            float64
+	max            float64
+	sampleSize     int64
+	mean           float64
+	sampleVariance float64
 }
 
-func (pm *ProductMoments) AddObservation(value float64) {
-	if pm.SampleSize == 0 {
-		pm.Max = value
-		pm.Min = value
-		pm.Mean = value
-		pm.SampleVariance = 0
-		pm.SampleSize = 1
+func CreateProductMoments() *productMoments {
+	pm := productMoments{}
+	return &pm
+}
+func (pm *productMoments) GetMin() float64 {
+	return pm.min
+}
+func (pm *productMoments) GetMean() float64 {
+	return pm.mean
+}
+func (pm *productMoments) GetMax() float64 {
+	return pm.max
+}
+func (pm *productMoments) GetSampleSize() int64 {
+	return pm.sampleSize
+}
+func (pm *productMoments) GetSampleVariance() float64 {
+	return pm.sampleVariance
+}
+func (pm *productMoments) AddObservation(value float64) {
+	if pm.sampleSize == 0 {
+		pm.max = value
+		pm.min = value
+		pm.mean = value
+		pm.sampleVariance = 0
+		pm.sampleSize = 1
 	} else {
-		if value > pm.Max {
-			pm.Max = value
-		} else if value < pm.Min {
-			pm.Min = value
+		if value > pm.max {
+			pm.max = value
+		} else if value < pm.min {
+			pm.min = value
 		}
-		pm.SampleSize += 1
-		pm.SampleVariance = ((float64((pm.SampleSize-2)/(pm.SampleSize-1)) * pm.SampleVariance) + (math.Pow((value-pm.Mean), 2))/float64(pm.SampleSize))
-		pm.Mean = pm.Mean + ((value - pm.Mean) / float64(pm.SampleSize))
+		pm.sampleSize += 1
+		pm.sampleVariance = ((float64((pm.sampleSize-2)/(pm.sampleSize-1)) * pm.sampleVariance) + (math.Pow((value-pm.mean), 2))/float64(pm.sampleSize))
+		pm.mean = pm.mean + ((value - pm.mean) / float64(pm.sampleSize))
 	}
 }
-func (pm *ProductMoments) AddObservations(values []float64) {
+func (pm *productMoments) AddObservations(values []float64) {
 	for _, val := range values {
 		pm.AddObservation(val)
 	}
