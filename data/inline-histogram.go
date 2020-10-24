@@ -83,7 +83,41 @@ func (ih *inlineHistogram) InvCDF(probability float64) float64 {
 	}
 }
 func (ih *inlineHistogram) CDF(value float64) float64 {
-	return 0.0
+	if value <= ih.minValue {
+		return 0.0
+	}
+	if value >= ih.maxValue {
+		return 1.0
+	}
+	dIdx := (value - ih.minValue) / ih.binWidth
+	if dIdx <= 0 {
+		return 0.0
+	}
+	if int(dIdx) >= len(ih.bins) {
+		return 1.0
+	}
+	val := float64(len(ih.bins)) / 2
+	if dIdx <= val {
+		idx := int64(math.Floor(dIdx))
+		var cobs int64 = 0
+		var i int64 = 0
+		for i < idx {
+			cobs += ih.bins[i]
+			i++
+		}
+		cobs += (int64(dIdx) - idx) * ih.bins[idx]
+		return float64(cobs) / float64(ih.pm.GetSampleSize())
+	} else {
+		idx := int64(math.Floor(dIdx))
+		var cobs int64 = ih.pm.GetSampleSize()
+		var i int64 = int64(len(ih.bins) - 1)
+		for i > idx {
+			cobs -= ih.bins[i]
+			i--
+		}
+		cobs -= (idx + 1 - int64(dIdx)) * ih.bins[idx]
+		return float64(cobs) / float64(ih.pm.GetSampleSize())
+	}
 }
 func (ih *inlineHistogram) PDF(value float64) float64 {
 	index := (value - ih.minValue) / (ih.binWidth)
