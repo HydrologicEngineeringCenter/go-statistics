@@ -70,12 +70,12 @@ func TestAddObservationNormalDist(t *testing.T) {
 	fmt.Println(fmt.Sprintf("sample size %d", ih.pm.GetSampleSize()))
 }
 func TestAddObservationNormalDistConvergence(t *testing.T) {
-	ih := Init(.1, -1.0, 1.0)
+	ih := Init(.01, -1.0, 1.0)
 	n := statistics.NormalDistribution{Mean: 0, StandardDeviation: 1}
 	//var wg sync.WaitGroup
 	var convergence bool = false
 	for convergence != true {
-		var iterations int64 = 10000
+		var iterations int64 = 1000
 		//wg.Add(iterations)
 		var i int64 = 0
 		for i < iterations {
@@ -84,7 +84,7 @@ func TestAddObservationNormalDistConvergence(t *testing.T) {
 			ih.AddObservation(n.InvCDF(rand.Float64()))
 			i++
 		}
-		convergence, iterations = ih.TestForConvergence(.2, .8, .9, .05)
+		convergence, iterations = ih.TestForConvergence(.01, .99, .95, .01)
 		fmt.Println(ih.pm.GetSampleSize())
 	}
 	fmt.Println(fmt.Sprintf("numbins %d", len(ih.GetBins())))
