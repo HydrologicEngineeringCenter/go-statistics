@@ -69,3 +69,28 @@ func TestAddObservationNormalDist(t *testing.T) {
 	fmt.Println(fmt.Sprintf("variance %f", ih.pm.GetSampleVariance()))
 	fmt.Println(fmt.Sprintf("sample size %d", ih.pm.GetSampleSize()))
 }
+func TestAddObservationNormalDistConvergence(t *testing.T) {
+	ih := Init(.1, -1.0, 1.0)
+	n := statistics.NormalDistribution{Mean: 0, StandardDeviation: 1}
+	//var wg sync.WaitGroup
+	var convergence bool = false
+	for convergence != true {
+		var iterations int64 = 10000
+		//wg.Add(iterations)
+		var i int64 = 0
+		for i < iterations {
+			//defer wg.Done()
+			//go ih.AddObservation(n.InvCDF(rand.Float64())) //i think the appending of slices in the add observation method on inlinehistogram causes the problems
+			ih.AddObservation(n.InvCDF(rand.Float64()))
+			i++
+		}
+		convergence, iterations = ih.TestForConvergence(.2, .8, .9, .05)
+		fmt.Println(ih.pm.GetSampleSize())
+	}
+	fmt.Println(fmt.Sprintf("numbins %d", len(ih.GetBins())))
+	fmt.Println(fmt.Sprintf("min %f", ih.pm.GetMin()))
+	fmt.Println(fmt.Sprintf("max %f", ih.pm.GetMax()))
+	fmt.Println(fmt.Sprintf("mean %f", ih.pm.GetMean()))
+	fmt.Println(fmt.Sprintf("variance %f", ih.pm.GetSampleVariance()))
+	fmt.Println(fmt.Sprintf("sample size %d", ih.pm.GetSampleSize()))
+}

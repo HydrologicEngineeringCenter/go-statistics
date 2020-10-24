@@ -1,6 +1,7 @@
 package data
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -120,12 +121,45 @@ func (ih *inlineHistogram) CDF(value float64) float64 {
 	}
 }
 func (ih *inlineHistogram) PDF(value float64) float64 {
+	fmt.Println(value)
 	index := (value - ih.minValue) / (ih.binWidth)
+	fmt.Println(index)
 	if index < 0 {
 		return 0.0
 	}
 	if index > ih.maxValue {
 		return 0.0
 	}
-	return float64(ih.bins[int(index)] / int64(ih.binWidth*float64(ih.pm.GetSampleSize())))
+
+	return float64(ih.bins[int(index)]) / ih.binWidth * float64(ih.pm.GetSampleSize())
+}
+func (ih *inlineHistogram) testTailConvergence(tailValue float64, zAlpha float64, relativeError float64) (bool, int64) {
+	qVal := ih.InvCDF(tailValue)
+	qSlope := ih.PDF(qVal)
+	variance := (tailValue * (1.0 - tailValue)) / (float64(ih.pm.GetSampleSize()) * qSlope * qSlope)
+	fmt.Println(fmt.Sprintf("slope is %f", qSlope))
+	fmt.Println(fmt.Sprintf("Variance is %f", variance))
+	fmt.Println(fmt.Sprintf("InvCdf is %f", qVal))
+	e := math.Abs(zAlpha * math.Sqrt(variance) / qVal)
+	fmt.Println(fmt.Sprintf("error is %f", e))
+	converged := (e <= relativeError*0.5)
+	if converged {
+		return true, 0
+	} else {
+		return false, 10000 // calculate this number...
+	}
+}
+func (ih *inlineHistogram) TestForConvergence(minConfidenceLimit float64, maxConfidenceLimit float64, zAlpha float64, relativeError float64) (bool, int64) {
+	minConverged, minItersLeft := ih.testTailConvergence(minConfidenceLimit, zAlpha, relativeError)
+	//can early exit here.
+	if !minConverged {
+		return minConverged, minItersLeft
+	}
+	maxConverged, maxItersLeft := ih.testTailConvergence(maxConfidenceLimit, zAlpha, relativeError)
+	if !maxConverged {
+		return maxConverged, maxItersLeft //min should be zero if we get to here.
+	}
+	//converged = true;
+	//convergedIteration = _numObs;
+	return true, 0
 }
