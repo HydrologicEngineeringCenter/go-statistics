@@ -80,7 +80,7 @@ func TestAddObservationNormalDistConvergence(t *testing.T) {
 			ih.AddObservation(n.InvCDF(rand.Float64()))
 			i++
 		}
-		convergence, iterations = ih.TestForConvergence(.01, .99, .95, .01)
+		convergence, iterations = ih.TestForConvergence(.01, .99, .95, .001)
 		fmt.Println(ih.pm.GetSampleSize())
 	}
 	fmt.Println(fmt.Sprintf("numbins %d", len(ih.GetBins())))

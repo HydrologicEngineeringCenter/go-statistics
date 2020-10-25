@@ -134,13 +134,16 @@ func (ih *inlineHistogram) PDF(value float64) float64 {
 func (ih *inlineHistogram) testTailConvergence(tailValue float64, zAlpha float64, relativeError float64) (bool, int64) {
 	qVal := ih.InvCDF(tailValue)
 	qSlope := ih.PDF(qVal)
-	variance := (tailValue * (1.0 - tailValue)) / (float64(ih.pm.GetSampleSize()) * qSlope * qSlope)
+	pOneMinusp := tailValue * (1.0 - tailValue)
+	variance := (pOneMinusp) / (float64(ih.pm.GetSampleSize()) * qSlope * qSlope)
 	e := math.Abs(zAlpha * math.Sqrt(variance) / qVal)
 	converged := (e <= relativeError*0.5)
+	iterations := int64(pOneMinusp * ((2 * zAlpha) / (math.Pow((qVal * relativeError * qSlope), 2))))
+	remainingIters := math.Abs(float64(iterations))
 	if converged {
 		return true, 0
 	} else {
-		return false, 10000 // calculate this number...
+		return false, int64(remainingIters) // calculate this number...
 	}
 }
 func (ih *inlineHistogram) TestForConvergence(minConfidenceLimit float64, maxConfidenceLimit float64, zAlpha float64, relativeError float64) (bool, int64) {
