@@ -72,15 +72,11 @@ func TestAddObservationNormalDist(t *testing.T) {
 func TestAddObservationNormalDistConvergence(t *testing.T) {
 	ih := Init(.01, -1.0, 1.0)
 	n := statistics.NormalDistribution{Mean: 0, StandardDeviation: 1}
-	//var wg sync.WaitGroup
 	var convergence bool = false
+	var iterations int64 = 1000
 	for convergence != true {
-		var iterations int64 = 1000
-		//wg.Add(iterations)
 		var i int64 = 0
 		for i < iterations {
-			//defer wg.Done()
-			//go ih.AddObservation(n.InvCDF(rand.Float64())) //i think the appending of slices in the add observation method on inlinehistogram causes the problems
 			ih.AddObservation(n.InvCDF(rand.Float64()))
 			i++
 		}
