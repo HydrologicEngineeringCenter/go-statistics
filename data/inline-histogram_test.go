@@ -80,9 +80,10 @@ func TestAddObservationNormalDistConvergence(t *testing.T) {
 			ih.AddObservation(n.InvCDF(rand.Float64()))
 			i++
 		}
-		convergence, iterations = ih.TestForConvergence(.01, .99, .95, .001)
-		fmt.Println(ih.pm.GetSampleSize())
+		convergence, iterations = ih.TestForConvergence(.01, .99, .95, .001) //upper confidence limit test, lower confidence limit test, confidenece, error tolerance
+		fmt.Println(fmt.Sprintf("Computed %d estimated to need %d more iterations", ih.pm.GetSampleSize(), iterations))
 	}
+	fmt.Println("****Converged******")
 	fmt.Println(fmt.Sprintf("numbins %d", len(ih.GetBins())))
 	fmt.Println(fmt.Sprintf("min %f", ih.pm.GetMin()))
 	fmt.Println(fmt.Sprintf("max %f", ih.pm.GetMax()))
