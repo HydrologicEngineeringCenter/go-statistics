@@ -142,7 +142,7 @@ func (ih *inlineHistogram) testTailConvergence(tailValue float64, zAlpha float64
 	if converged {
 		return true, 0
 	} else {
-		iterations := int64(math.Pow(((pOneMinusp*(2*zAlpha))/(qVal*relativeError)), 2) / (qSlope * qSlope))
+		iterations := int64((pOneMinusp / (qSlope * qSlope)) * math.Pow((2*zAlpha)/(qVal*relativeError), 2))
 		remainingIters := math.Abs(float64(iterations))
 		if iterations == math.MinInt64 {
 			//cheating. i know.
