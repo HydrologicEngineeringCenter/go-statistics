@@ -21,6 +21,19 @@ func TestAddObservationBinData(t *testing.T) {
 		}
 	}
 }
+func TestAddObservationBinEdges(t *testing.T) {
+	ih := Init(1.0, 0.0, 5.0)
+	vals := []float64{0, 1, 2, 3, 4, 5}
+	expected := []int64{1, 1, 1, 1, 1, 1}
+	for idx := range vals {
+		ih.AddObservation(vals[idx])
+	}
+	for idx, val := range expected {
+		if ih.GetBins()[idx] != val {
+			t.Errorf("Bin(%d) = %d; expected %d", idx, ih.GetBins()[idx], val)
+		}
+	}
+}
 func TestAddObservationExceedUpper(t *testing.T) {
 	ih := Init(1.0, 0.0, 5.0)
 	vals := []float64{.5, 1.5, 2.5, 3.5, 4.5, 5.5}

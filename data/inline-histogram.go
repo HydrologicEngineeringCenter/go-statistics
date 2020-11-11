@@ -38,7 +38,9 @@ func (ih *inlineHistogram) AddObservation(value float64) {
 	//index it to the right location
 	index := (value - ih.minValue) / (ih.binWidth)
 	if value == ih.maxValue {
-		index -= 1 //edge case
+		tmpBins := make([]int64, 1)
+		ih.bins = append(ih.bins, tmpBins...)
+		ih.maxValue = ih.maxValue + ih.binWidth
 	}
 	ih.pm.AddObservation(value) //not critically necessary
 	//increment by 1
