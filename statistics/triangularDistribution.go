@@ -41,3 +41,6 @@ func (t TriangularDistribution) PDF(value float64) float64 {
 		return 0
 	}
 }
+func (t TriangularDistribution) CentralTendency() float64 {
+	return t.MostLikely
+}

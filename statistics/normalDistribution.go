@@ -41,3 +41,6 @@ func (n NormalDistribution) PDF(value float64) float64 {
 	z := value - n.Mean
 	return math.Exp(-z*z/(2*n.StandardDeviation*n.StandardDeviation)) * ((1 / math.Sqrt(2*math.Pi)) / n.StandardDeviation)
 }
+func (n NormalDistribution) CentralTendency() float64 {
+	return n.Mean
+}

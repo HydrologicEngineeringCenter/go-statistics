@@ -39,3 +39,6 @@ func (u UniformDistribution) PDF(value float64) float64 {
 		return 0
 	}
 }
+func (u UniformDistribution) CentralTendency() float64 {
+	return (u.Min + u.Max)/2
+}

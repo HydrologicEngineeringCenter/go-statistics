@@ -19,3 +19,6 @@ func (n LogNormalDistribution) PDF(value float64) float64 {
 	z := NormalDistribution{Mean: n.Mean, StandardDeviation: n.StandardDeviation}
 	return z.PDF(math.Log(value))
 }
+func (n LogNormalDistribution) CentralTendency() float64 {
+	return n.Mean
+}
