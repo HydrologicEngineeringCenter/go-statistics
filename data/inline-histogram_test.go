@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"testing"
@@ -20,6 +21,13 @@ func TestAddObservationBinData(t *testing.T) {
 			t.Errorf("Bin(%d) = %d; expected %d", idx, ih.GetBins()[idx], val)
 		}
 	}
+	fmt.Println(ih)
+	b, err := json.Marshal(ih)
+	if err != nil {
+		panic(err)
+	}
+	s := string(b)
+	fmt.Println(s)
 }
 func TestAddObservationBinEdges(t *testing.T) {
 	ih := Init(1.0, 0.0, 5.0)

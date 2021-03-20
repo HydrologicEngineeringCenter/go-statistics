@@ -1,7 +1,9 @@
 package data
 
 import (
+	"fmt"
 	"math"
+	"strings"
 )
 
 type InlineHistogram struct {
@@ -167,4 +169,23 @@ func (ih *InlineHistogram) TestForConvergence(minConfidenceLimit float64, maxCon
 	//converged = true;
 	//convergedIteration = _numObs;
 	return true, 0
+}
+func (ih *InlineHistogram) String() string {
+	s := fmt.Sprintf("InlineHistogram:\nBinCount: %v\nObservations: %v\nMin: %f\nMax: %f\nMean: %f\n", len(ih.bins), ih.pm.sampleSize, ih.pm.min, ih.pm.max, ih.pm.GetMean())
+	s += "Bin Start, Count\n"
+	for idx, val := range ih.bins {
+		s += fmt.Sprintf("%f, %v\n", ih.minValue+(ih.binWidth*float64(idx)), val)
+	}
+	return s
+}
+func (ih InlineHistogram) MarshalJSON() ([]byte, error) {
+
+	s := fmt.Sprintf("{\"inlinehistogram\":{\"bincount\":%v,\"observations\":%v,\"min\":%f,\"max\":%f,\"mean\":%f,", len(ih.bins), ih.pm.sampleSize, ih.pm.min, ih.pm.max, ih.pm.GetMean())
+	s += "\"histogram\":["
+	for idx, val := range ih.bins {
+		s += fmt.Sprintf("{\"binstart\":%f,\"count\":%v},", ih.minValue+(ih.binWidth*float64(idx)), val)
+	}
+	s = strings.TrimRight(s, ",")
+	s += "]}}"
+	return []byte(s), nil
 }
