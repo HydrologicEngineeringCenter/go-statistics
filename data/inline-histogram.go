@@ -4,7 +4,7 @@ import (
 	"math"
 )
 
-type inlineHistogram struct {
+type InlineHistogram struct {
 	binWidth float64
 	bins     []int64
 	minValue float64
@@ -12,15 +12,15 @@ type inlineHistogram struct {
 	pm       *productMoments
 }
 
-func Init(binwidth float64, minval float64, maxval float64) *inlineHistogram {
+func Init(binwidth float64, minval float64, maxval float64) *InlineHistogram {
 	val := math.Ceil((maxval - minval) / binwidth)
 	b := make([]int64, int(val))
 	maxval = minval + math.Floor(val*binwidth)
 	moments := CreateProductMoments()
-	ih := inlineHistogram{bins: b, binWidth: binwidth, minValue: minval, maxValue: maxval, pm: moments}
+	ih := InlineHistogram{bins: b, binWidth: binwidth, minValue: minval, maxValue: maxval, pm: moments}
 	return &ih
 }
-func (ih *inlineHistogram) AddObservation(value float64) {
+func (ih *InlineHistogram) AddObservation(value float64) {
 	//check if value is a valid number?
 	if ih.maxValue < value {
 		//add bins to end of array
@@ -47,15 +47,15 @@ func (ih *inlineHistogram) AddObservation(value float64) {
 	//increment by 1
 	ih.bins[int(index)] += 1 //truncation towards zero
 }
-func (ih *inlineHistogram) AddObservations(values []float64) {
+func (ih *InlineHistogram) AddObservations(values []float64) {
 	for _, val := range values {
 		ih.AddObservation(val)
 	}
 }
-func (ih *inlineHistogram) GetBins() []int64 {
+func (ih *InlineHistogram) GetBins() []int64 {
 	return ih.bins
 }
-func (ih *inlineHistogram) InvCDF(probability float64) float64 {
+func (ih *InlineHistogram) InvCDF(probability float64) float64 {
 	if probability <= 0.0 {
 		return ih.minValue
 	}
@@ -87,7 +87,7 @@ func (ih *inlineHistogram) InvCDF(probability float64) float64 {
 		return ih.maxValue - ih.binWidth*(binOffset)
 	}
 }
-func (ih *inlineHistogram) CDF(value float64) float64 {
+func (ih *InlineHistogram) CDF(value float64) float64 {
 	if value <= ih.minValue {
 		return 0.0
 	}
@@ -124,7 +124,7 @@ func (ih *inlineHistogram) CDF(value float64) float64 {
 		return float64(cobs) / float64(ih.pm.GetSampleSize())
 	}
 }
-func (ih *inlineHistogram) PDF(value float64) float64 {
+func (ih *InlineHistogram) PDF(value float64) float64 {
 	index := (value - ih.minValue) / ih.binWidth
 	if index < 0 {
 		return 0.0
@@ -134,7 +134,7 @@ func (ih *inlineHistogram) PDF(value float64) float64 {
 	}
 	return float64(ih.bins[int(index)]) / (ih.binWidth * float64(ih.pm.GetSampleSize()))
 }
-func (ih *inlineHistogram) testTailConvergence(tailValue float64, zAlpha float64, relativeError float64) (bool, int64) {
+func (ih *InlineHistogram) testTailConvergence(tailValue float64, zAlpha float64, relativeError float64) (bool, int64) {
 	qVal := ih.InvCDF(tailValue)
 	qSlope := ih.PDF(qVal)
 	pOneMinusp := tailValue * (1.0 - tailValue)
@@ -154,7 +154,7 @@ func (ih *inlineHistogram) testTailConvergence(tailValue float64, zAlpha float64
 		return false, int64(remainingIters) // calculate this number...
 	}
 }
-func (ih *inlineHistogram) TestForConvergence(minConfidenceLimit float64, maxConfidenceLimit float64, zAlpha float64, relativeError float64) (bool, int64) {
+func (ih *InlineHistogram) TestForConvergence(minConfidenceLimit float64, maxConfidenceLimit float64, zAlpha float64, relativeError float64) (bool, int64) {
 	minConverged, minItersLeft := ih.testTailConvergence(minConfidenceLimit, zAlpha, relativeError)
 	//can early exit here.
 	if !minConverged {
