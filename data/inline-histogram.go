@@ -179,8 +179,8 @@ func (ih *InlineHistogram) String() string {
 	return s
 }
 func (ih *InlineHistogram) StringSparse() string {
-	s := fmt.Sprintf("InlineHistogram:\nBinCount: %v\nObservations: %v\nMin: %f\nMax: %f\nMean: %f\n", len(ih.bins), ih.pm.sampleSize, ih.pm.min, ih.pm.max, ih.pm.GetMean())
-	s += "Bin Start, Count\n"
+	s := fmt.Sprintf("InlineHistogram:\nBinCount: %v\nBinWidth: %v\nObservations: %v\nMin: %f\nMax: %f\nMean: %f\n", len(ih.bins), ih.binWidth, ih.pm.sampleSize, ih.pm.min, ih.pm.max, ih.pm.GetMean())
+	s += "Bin Start, Count (bins with zero counts not reported!)\n"
 	for idx, val := range ih.bins {
 		if val != 0 {
 			s += fmt.Sprintf("%f, %v\n", ih.minValue+(ih.binWidth*float64(idx)), val)
