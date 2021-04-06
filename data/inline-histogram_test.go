@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/HenryGeorgist/go-statistics/statistics"
+	"github.com/HydrologicEngineeringCenter/go-statistics/statistics"
 )
 
 func TestAddObservationBinData(t *testing.T) {
