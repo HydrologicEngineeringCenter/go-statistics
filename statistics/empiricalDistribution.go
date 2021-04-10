@@ -118,16 +118,24 @@ func (e EmpiricalDistribution) CDF(value float64) float64 {
 		var cobs int64 = e.GetSampleSize()
 		var i int64 = int64(len(e.binCounts) - 1)
 		for i > idx {
-			cobs -= (idx + 1 - int64(dIdx)) * e.binCounts[idx]
-			return float64(cobs) / float64(e.GetSampleSize())
+			cobs -= e.binCounts[i]
+			i--
 		}
+		cobs -= (idx + 1 - int64(dIdx)) * e.binCounts[idx]
+		return float64(cobs) / float64(e.GetSampleSize())
 
 	}
 }
 
 func (e EmpiricalDistribution) PDF(value float64) float64 {
-	// histogram pdf
-	return 0.0
+	index := (value - float64(e.minValue)) / float64(e.binWidth)
+	if index < 0 {
+		return 0.0
+	}
+	if int(index) > len(e.binCounts) {
+		return 0.0
+	}
+	return float64(e.binCounts[int(index)]) / float64(e.binWidth*e.GetSampleSize())
 }
 
 func (e EmpiricalDistribution) CentralTendency() float64 {
