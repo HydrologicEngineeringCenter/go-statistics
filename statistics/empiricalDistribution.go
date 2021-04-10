@@ -2,6 +2,7 @@ package statistics
 
 import (
 	"errors"
+	"math"
 )
 
 type EmpiricalDistribution struct {
@@ -88,8 +89,40 @@ func (e EmpiricalDistribution) InvCDF(probability float64) float64 {
 }
 
 func (e EmpiricalDistribution) CDF(value float64) float64 {
-	// histogram cdf
-	return 0.0
+	if value <= float64(e.minValue) {
+		return 0.0
+	}
+	if value >= float64(e.maxValue) {
+		return 1.0
+	}
+	dIdx := (value - float64(e.minValue)) / float64(e.binWidth)
+	if dIdx <= 0 {
+		return 0.0
+	}
+	if int(dIdx) >= len(e.binCounts) {
+		return 1.0
+	}
+	val := float64(len(e.binCounts)) / 2
+	if dIdx <= val {
+		idx := int64(math.Floor(dIdx))
+		var cobs int64 = 0
+		var i int64 = 0
+		for i < idx {
+			cobs += e.binCounts[i]
+			i++
+		}
+		cobs += (int64(dIdx) - idx) * e.binCounts[idx]
+		return float64(cobs) / float64(e.GetSampleSize())
+	} else {
+		idx := int64(math.Floor(dIdx))
+		var cobs int64 = e.GetSampleSize()
+		var i int64 = int64(len(e.binCounts) - 1)
+		for i > idx {
+			cobs -= (idx + 1 - int64(dIdx)) * e.binCounts[idx]
+			return float64(cobs) / float64(e.GetSampleSize())
+		}
+
+	}
 }
 
 func (e EmpiricalDistribution) PDF(value float64) float64 {
