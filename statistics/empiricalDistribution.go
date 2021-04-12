@@ -128,14 +128,16 @@ func (e EmpiricalDistribution) CDF(value float64) float64 {
 }
 
 func (e EmpiricalDistribution) PDF(value float64) float64 {
-	index := (value - float64(e.minValue)) / float64(e.binWidth)
-	if index < 0 {
+	// binwidth returns 0, even when hard-wired to be 1
+	idx := (value - float64(e.minValue)) / float64(e.binWidth)
+	if idx < 0 {
 		return 0.0
 	}
-	if int(index) > len(e.binCounts) {
+	if int(idx) > len(e.binCounts) {
 		return 0.0
 	}
-	return float64(e.binCounts[int(index)]) / float64(e.binWidth*e.GetSampleSize())
+	return float64(e.binCounts[int64(idx)]) / float64(e.binWidth*e.GetSampleSize())
+
 }
 
 func (e EmpiricalDistribution) CentralTendency() float64 {
