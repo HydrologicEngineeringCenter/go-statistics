@@ -2,6 +2,7 @@ package statistics
 
 import (
 	"errors"
+	"fmt"
 	"math"
 )
 
@@ -46,7 +47,7 @@ func Init(binstarts []int64, bincounts []int64) (*EmpiricalDistribution, error) 
 	}
 }
 
-func (e EmpiricalDistribution) GetSampleSize() int64 {
+func (e *EmpiricalDistribution) GetSampleSize() int64 {
 	var sum int64
 	sum = 0
 	for i := 0; i < len(e.binCounts); i++ {
@@ -55,7 +56,7 @@ func (e EmpiricalDistribution) GetSampleSize() int64 {
 	return sum
 }
 
-func (e EmpiricalDistribution) InvCDF(probability float64) float64 {
+func (e *EmpiricalDistribution) InvCDF(probability float64) float64 {
 	if probability <= 0.0 {
 		return float64(e.minValue)
 	}
@@ -88,7 +89,7 @@ func (e EmpiricalDistribution) InvCDF(probability float64) float64 {
 	}
 }
 
-func (e EmpiricalDistribution) CDF(value float64) float64 {
+func (e *EmpiricalDistribution) CDF(value float64) float64 {
 	if value <= float64(e.minValue) {
 		return 0.0
 	}
@@ -127,8 +128,7 @@ func (e EmpiricalDistribution) CDF(value float64) float64 {
 	}
 }
 
-func (e EmpiricalDistribution) PDF(value float64) float64 {
-	// binwidth returns 0, even when hard-wired to be 1
+func (e *EmpiricalDistribution) PDF(value float64) float64 {
 	idx := (value - float64(e.minValue)) / float64(e.binWidth)
 	if idx < 0 {
 		return 0.0
@@ -140,6 +140,15 @@ func (e EmpiricalDistribution) PDF(value float64) float64 {
 
 }
 
-func (e EmpiricalDistribution) CentralTendency() float64 {
+func (e *EmpiricalDistribution) CentralTendency() float64 {
 	return e.InvCDF(0.5)
+}
+
+func (e *EmpiricalDistribution) String() string {
+	s := fmt.Sprintf("Empirical Distribution:\nBinCount: %v\nObservations: %v\nMin: %v\nMax: %v\nMean: %f\n", len(e.binStarts), e.GetSampleSize(), e.minValue, e.maxValue, e.CentralTendency())
+	s += "Bin Start, Count\n"
+	for idx, val := range e.binCounts {
+		s += fmt.Sprintf("%v, %v\n", e.minValue+(e.binWidth*int64(idx)), val)
+	}
+	return s
 }
