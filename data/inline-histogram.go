@@ -22,6 +22,7 @@ func Init(binwidth float64, minval float64, maxval float64) *InlineHistogram {
 	ih := InlineHistogram{bins: b, binWidth: binwidth, minValue: minval, maxValue: maxval, pm: moments}
 	return &ih
 }
+
 func (ih *InlineHistogram) AddObservation(value float64) {
 	//check if value is a valid number?
 	if ih.maxValue < value {
@@ -178,6 +179,20 @@ func (ih *InlineHistogram) String() string {
 	}
 	return s
 }
+
+func (ih *InlineHistogram) HistogramToEmpiricalString() string {
+	s := fmt.Sprintf("InlineHistogram:\nBinCount: %v\nObservations: %v\nMin: %f\nMax: %f\nMean: %f\n", len(ih.bins), ih.pm.sampleSize, ih.pm.min, ih.pm.max, ih.pm.GetMean())
+	s += "Bin Start"
+	for idx, _ := range ih.bins {
+		s += fmt.Sprintf("%f, ", ih.minValue+(ih.binWidth*float64(idx)))
+	}
+	s += "\nBin Count:"
+	for _, val := range ih.bins {
+		s += fmt.Sprintf(" %v", val)
+	}
+	return s
+}
+
 func (ih *InlineHistogram) StringSparse() string {
 	s := fmt.Sprintf("InlineHistogram:\nBinCount: %v\nBinWidth: %v\nObservations: %v\nMin: %f\nMax: %f\nMean: %f\n", len(ih.bins), ih.binWidth, ih.pm.sampleSize, ih.pm.min, ih.pm.max, ih.pm.GetMean())
 	s += "Bin Start, Count (bins with zero counts not reported!)\n"
