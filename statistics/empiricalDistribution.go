@@ -15,10 +15,10 @@ type EmpiricalDistribution struct {
 }
 
 func Init(binstarts []float64, bincounts []int64) (*EmpiricalDistribution, error) {
-	if binstarts == nil {
-		return nil, errors.New("bin starts array cannot be empty")
-	} else if bincounts == nil {
-		return nil, errors.New("bin counts array cannot be empty")
+	if len(binstarts) < 2 {
+		return nil, errors.New("there must be more than 1 bin hence more than 1 bin start")
+	} else if len(bincounts) < 2 {
+		return nil, errors.New("there must be more than 1 bin hence more than 1 bin count")
 	} else if len(binstarts) != len(bincounts) {
 		return nil, errors.New("the arrays must be the same size")
 	} else {

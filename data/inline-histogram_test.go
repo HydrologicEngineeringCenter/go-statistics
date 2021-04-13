@@ -176,9 +176,10 @@ func TestBins(t *testing.T) {
 	for idx := range vals {
 		ih.AddObservation(vals[idx])
 	}
+	b := ih.BinStarts()
 	for idx, val := range expected {
-		if ih.Bins()[idx] != float64(val) {
-			t.Errorf("BinStart(%d) = %f; expected %f", idx, ih.Bins()[idx], float64(val))
+		if b[idx] != float64(val) {
+			t.Errorf("BinStarts(%d) = %f; expected %f", idx, b[idx], float64(val))
 		}
 	}
 }
@@ -190,9 +191,10 @@ func TestBinsAgain(t *testing.T) {
 	for idx := range vals {
 		ih.AddObservation(vals[idx])
 	}
+	b := ih.BinStarts()
 	for idx, val := range expected {
-		if ih.Bins()[idx] != float64(val) {
-			t.Errorf("BinStart(%d) = %f; expected %f", idx, ih.Bins()[idx], float64(val))
+		if b[idx] != float64(val) {
+			t.Errorf("BinStarts(%d) = %f; expected %f", idx, b[idx], float64(val))
 		}
 	}
 }
@@ -204,9 +206,10 @@ func TestBinCounts(t *testing.T) {
 	for idx := range vals {
 		ih.AddObservation(vals[idx])
 	}
+	b := ih.GetBins()
 	for idx, val := range expected {
-		if ih.BinCounts()[idx] != val {
-			t.Errorf("Bin(%d) = %v; expected %v", idx, ih.BinCounts()[idx], val)
+		if b[idx] != val {
+			t.Errorf("GetBins(%d) = %v; expected %v", idx, b[idx], val)
 		}
 	}
 }

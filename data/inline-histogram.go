@@ -181,20 +181,15 @@ func (ih *InlineHistogram) String() string {
 	return s
 }
 
-func (ih *InlineHistogram) Bins() []float64 {
+func (ih *InlineHistogram) BinStarts() []float64 {
 	binStarts := make([]float64, len(ih.bins))
-	for i := range ih.bins {
-		binStarts[i] = ih.minValue + (float64(i) * ih.binWidth)
+	m := ih.minValue
+	b := ih.binWidth
+	bins := ih.bins
+	for i := range bins {
+		binStarts[i] = m + (float64(i) * b)
 	}
 	return binStarts
-}
-
-func (ih *InlineHistogram) BinCounts() []int64 {
-	binCounts := make([]int64, len(ih.bins))
-	for i := range ih.bins {
-		binCounts[i] = ih.bins[(int64(ih.minValue)+int64(i))*int64(ih.binWidth)]
-	}
-	return binCounts
 }
 
 func (ih *InlineHistogram) StringSparse() string {
