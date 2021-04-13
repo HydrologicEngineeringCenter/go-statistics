@@ -189,10 +189,10 @@ func (ih *InlineHistogram) Bins() []float64 {
 	return binStarts
 }
 
-func (ih *InlineHistogram) BinCounts() []float64 {
-	binCounts := []float64{}
+func (ih *InlineHistogram) BinCounts() []int64 {
+	binCounts := []int64{}
 	for _, val := range ih.bins {
-		binCounts = append(binCounts, float64(val))
+		binCounts = append(binCounts, val)
 	}
 	return binCounts
 }

@@ -9,12 +9,12 @@ import (
 type EmpiricalDistribution struct {
 	binStarts []float64
 	binWidth  int64
-	binCounts []float64
+	binCounts []int64
 	minValue  float64
 	maxValue  float64
 }
 
-func Init(binstarts []float64, bincounts []float64) (*EmpiricalDistribution, error) {
+func Init(binstarts []float64, bincounts []int64) (*EmpiricalDistribution, error) {
 	if binstarts == nil {
 		return nil, errors.New("bin starts array cannot be empty")
 	} else if bincounts == nil {
@@ -66,22 +66,22 @@ func (e *EmpiricalDistribution) InvCDF(probability float64) float64 {
 	numobs := int64(float64(e.GetSampleSize()) * probability)
 	if probability <= 0.5 {
 		idx := 0
-		obs := int64(e.binCounts[idx]) // bin counts
+		obs := e.binCounts[idx] // bin counts
 		cobs := obs
 		for cobs < numobs {
 			idx++
-			obs = int64(e.binCounts[idx])
+			obs = e.binCounts[idx]
 			cobs += obs
 		}
 		binOffSet := float64(idx+1) - float64(cobs-numobs)/float64(obs)
 		return float64(e.minValue) + float64(e.binWidth)*binOffSet
 	} else {
 		idx := len(e.binCounts)
-		obs := int64(e.binCounts[idx])
+		obs := e.binCounts[idx]
 		cobs := e.GetSampleSize() - obs
 		for cobs > numobs {
 			idx--
-			obs = int64(e.binCounts[idx])
+			obs = e.binCounts[idx]
 			cobs -= obs
 		}
 		binOffSet := float64(len(e.binCounts)-idx) + float64(numobs-cobs)/float64(obs)
@@ -109,20 +109,20 @@ func (e *EmpiricalDistribution) CDF(value float64) float64 {
 		var cobs int64 = 0
 		var i int64 = 0
 		for i < idx {
-			cobs += int64(e.binCounts[i])
+			cobs += e.binCounts[i]
 			i++
 		}
-		cobs += (int64(dIdx) - idx) * int64(e.binCounts[idx])
+		cobs += (int64(dIdx) - idx) * e.binCounts[idx]
 		return float64(cobs) / float64(e.GetSampleSize())
 	} else {
 		idx := int64(math.Floor(dIdx))
 		var cobs int64 = e.GetSampleSize()
 		var i int64 = int64(len(e.binCounts) - 1)
 		for i > idx {
-			cobs -= int64(e.binCounts[i])
+			cobs -= e.binCounts[i]
 			i--
 		}
-		cobs -= (idx + 1 - int64(dIdx)) * int64(e.binCounts[idx])
+		cobs -= (idx + 1 - int64(dIdx)) * e.binCounts[idx]
 		return float64(cobs) / float64(e.GetSampleSize())
 
 	}

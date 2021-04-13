@@ -7,7 +7,7 @@ import (
 
 func TestEmpiricalDistribution_GetSampleSize(t *testing.T) {
 	binstarts := []float64{0, 1, 2, 3, 4}
-	bincounts := []float64{2, 3, 4, 3, 2}
+	bincounts := []int64{2, 3, 4, 3, 2}
 	e, _ := Init(binstarts, bincounts)
 	var expected int64 = 14
 	got := e.GetSampleSize()
@@ -17,7 +17,7 @@ func TestEmpiricalDistribution_GetSampleSize(t *testing.T) {
 }
 func TestEmpiricalDistribution_InvCDF(t *testing.T) {
 	binstarts := []float64{0, 1, 2, 3, 4}
-	bincounts := []float64{2, 3, 4, 3, 2}
+	bincounts := []int64{2, 3, 4, 3, 2}
 	e, _ := Init(binstarts, bincounts)
 	var expected float64 = 2
 	got := e.InvCDF(0.4)
@@ -28,7 +28,7 @@ func TestEmpiricalDistribution_InvCDF(t *testing.T) {
 }
 func TestEmpiricalDistribution_CDF(t *testing.T) {
 	binstarts := []float64{0, 1, 2, 3, 4}
-	bincounts := []float64{2, 3, 4, 3, 2}
+	bincounts := []int64{2, 3, 4, 3, 2}
 	e, _ := Init(binstarts, bincounts)
 	expected := 0.642857
 	got := e.CDF(3.5)
@@ -40,7 +40,7 @@ func TestEmpiricalDistribution_CDF(t *testing.T) {
 
 func TestEmpiricalDistribution_PDF(t *testing.T) {
 	binstarts := []float64{0, 1, 2, 3, 4}
-	bincounts := []float64{2, 3, 4, 3, 2}
+	bincounts := []int64{2, 3, 4, 3, 2}
 	e, _ := Init(binstarts, bincounts)
 	var expected float64 = 0.21428571
 	got := e.PDF(3.5)
