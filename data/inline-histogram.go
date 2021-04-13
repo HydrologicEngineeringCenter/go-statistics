@@ -171,6 +171,7 @@ func (ih *InlineHistogram) TestForConvergence(minConfidenceLimit float64, maxCon
 	//convergedIteration = _numObs;
 	return true, 0
 }
+
 func (ih *InlineHistogram) String() string {
 	s := fmt.Sprintf("InlineHistogram:\nBinCount: %v\nObservations: %v\nMin: %f\nMax: %f\nMean: %f\n", len(ih.bins), ih.pm.sampleSize, ih.pm.min, ih.pm.max, ih.pm.GetMean())
 	s += "Bin Start, Count\n"
@@ -180,17 +181,20 @@ func (ih *InlineHistogram) String() string {
 	return s
 }
 
-func (ih *InlineHistogram) HistogramToEmpiricalString() string {
-	s := fmt.Sprintf("InlineHistogram:\nBinCount: %v\nObservations: %v\nMin: %f\nMax: %f\nMean: %f\n", len(ih.bins), ih.pm.sampleSize, ih.pm.min, ih.pm.max, ih.pm.GetMean())
-	s += "Bin Start"
-	for idx, _ := range ih.bins {
-		s += fmt.Sprintf("%f, ", ih.minValue+(ih.binWidth*float64(idx)))
+func (ih *InlineHistogram) Bins() []float64 {
+	binStarts := []float64{}
+	for i, _ := range ih.bins {
+		binStarts = append(binStarts, float64(i))
 	}
-	s += "\nBin Count:"
+	return binStarts
+}
+
+func (ih *InlineHistogram) BinCounts() []float64 {
+	binCounts := []float64{}
 	for _, val := range ih.bins {
-		s += fmt.Sprintf(" %v", val)
+		binCounts = append(binCounts, float64(val))
 	}
-	return s
+	return binCounts
 }
 
 func (ih *InlineHistogram) StringSparse() string {
