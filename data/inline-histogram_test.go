@@ -168,3 +168,48 @@ func TestAddObservationNormalDistConvergenceMostStrict(t *testing.T) {
 	fmt.Println(fmt.Sprintf("variance %f", ih.pm.GetSampleVariance()))
 	fmt.Println(fmt.Sprintf("sample size %d", ih.pm.GetSampleSize()))
 }
+
+func TestBins(t *testing.T) {
+	ih := Init(1.0, 0.0, 5.0)
+	vals := []float64{-.5, .5, 1.5, 2.5, 3.5, 4.5}
+	expected := []int64{-1, 0, 1, 2, 3, 4}
+	for idx := range vals {
+		ih.AddObservation(vals[idx])
+	}
+	b := ih.BinStarts()
+	for idx, val := range expected {
+		if b[idx] != float64(val) {
+			t.Errorf("BinStarts(%d) = %f; expected %f", idx, b[idx], float64(val))
+		}
+	}
+}
+
+func TestBinsAgain(t *testing.T) {
+	ih := Init(2.0, 1.0, 5.0)
+	vals := []float64{-.5, .5, 1.5, 2.5, 3.5, 4.5}
+	expected := []int64{-1, 1, 3}
+	for idx := range vals {
+		ih.AddObservation(vals[idx])
+	}
+	b := ih.BinStarts()
+	for idx, val := range expected {
+		if b[idx] != float64(val) {
+			t.Errorf("BinStarts(%d) = %f; expected %f", idx, b[idx], float64(val))
+		}
+	}
+}
+
+func TestBinCounts(t *testing.T) {
+	ih := Init(1.0, 0.0, 5.0)
+	vals := []float64{-.5, .5, 1.5, 2.5, 3.5, 4.5}
+	expected := []int64{1, 1, 1, 1, 1, 1}
+	for idx := range vals {
+		ih.AddObservation(vals[idx])
+	}
+	b := ih.GetBins()
+	for idx, val := range expected {
+		if b[idx] != val {
+			t.Errorf("GetBins(%d) = %v; expected %v", idx, b[idx], val)
+		}
+	}
+}
