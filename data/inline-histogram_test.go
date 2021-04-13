@@ -183,6 +183,20 @@ func TestBins(t *testing.T) {
 	}
 }
 
+func TestBinsAgain(t *testing.T) {
+	ih := Init(2.0, 1.0, 5.0)
+	vals := []float64{-.5, .5, 1.5, 2.5, 3.5, 4.5}
+	expected := []int64{-1, 1, 3}
+	for idx := range vals {
+		ih.AddObservation(vals[idx])
+	}
+	for idx, val := range expected {
+		if ih.Bins()[idx] != float64(val) {
+			t.Errorf("BinStart(%d) = %f; expected %f", idx, ih.Bins()[idx], float64(val))
+		}
+	}
+}
+
 func TestBinCounts(t *testing.T) {
 	ih := Init(1.0, 0.0, 5.0)
 	vals := []float64{-.5, .5, 1.5, 2.5, 3.5, 4.5}
