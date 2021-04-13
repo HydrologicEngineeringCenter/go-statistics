@@ -205,8 +205,8 @@ func TestBinCounts(t *testing.T) {
 		ih.AddObservation(vals[idx])
 	}
 	for idx, val := range expected {
-		if ih.BinCounts()[idx] != float64(val) {
-			t.Errorf("Bin(%d) = %f; expected %f", idx, ih.BinCounts()[idx], float64(val))
+		if ih.BinCounts()[idx] != val {
+			t.Errorf("Bin(%d) = %v; expected %v", idx, ih.BinCounts()[idx], val)
 		}
 	}
 }
