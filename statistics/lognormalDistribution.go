@@ -1,10 +1,12 @@
 package statistics
 
-import "math"
+import (
+	"math"
+)
 
 type LogNormalDistribution struct {
-	Mean              float64
-	StandardDeviation float64
+	Mean              float64 `json:mean`
+	StandardDeviation float64 `json:standarddeviation`
 }
 
 func (n LogNormalDistribution) InvCDF(probability float64) float64 {

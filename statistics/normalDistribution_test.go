@@ -41,3 +41,19 @@ func TestNormalPDF(t *testing.T) {
 		}
 	}
 }
+func TestNormalEncoding(t *testing.T) {
+	n := NormalDistribution{Mean: 0, StandardDeviation: 1}
+	Marshal(n)
+	ln := LogNormalDistribution{Mean: 0, StandardDeviation: 1}
+	Marshal(ln)
+	tri := TriangularDistribution{Min: 1, MostLikely: 2, Max: 3}
+	Marshal(tri)
+	u := UniformDistribution{Min: 1, Max: 5}
+	Marshal(u)
+	d, _ := InitDeterministic(2.3)
+	Marshal(d)
+	binstarts := []float64{0, 1, 2, 3, 4}
+	bincounts := []int64{2, 3, 4, 3, 2}
+	e, _ := Init(binstarts, bincounts)
+	Marshal(e)
+}
