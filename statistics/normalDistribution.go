@@ -3,8 +3,8 @@ package statistics
 import "math"
 
 type NormalDistribution struct {
-	Mean              float64
-	StandardDeviation float64
+	Mean              float64 `json:"mean"`
+	StandardDeviation float64 `json:"standarddeviation`
 }
 
 func (n NormalDistribution) InvCDF(probability float64) float64 {

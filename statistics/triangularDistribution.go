@@ -3,9 +3,9 @@ package statistics
 import "math"
 
 type TriangularDistribution struct {
-	Min        float64
-	MostLikely float64
-	Max        float64
+	Min        float64 `json:"min"`
+	MostLikely float64 `json:"mostlikely"`
+	Max        float64 `json:"max"`
 }
 
 func (t TriangularDistribution) InvCDF(probability float64) float64 {

@@ -1,8 +1,8 @@
 package statistics
 
 type UniformDistribution struct {
-	Min float64
-	Max float64
+	Min float64 `json:"min"`
+	Max float64 `json:"max"`
 }
 
 func (u *UniformDistribution) Fit(inputData []float64) {
@@ -40,5 +40,5 @@ func (u UniformDistribution) PDF(value float64) float64 {
 	}
 }
 func (u UniformDistribution) CentralTendency() float64 {
-	return (u.Min + u.Max)/2
+	return (u.Min + u.Max) / 2
 }
