@@ -47,8 +47,15 @@ func (ih *InlineHistogram) AddObservation(value float64) {
 		ih.maxValue = ih.maxValue + ih.binWidth
 	}
 	ih.pm.AddObservation(value) //not critically necessary
+	intifiedidx := int(index)
+	if intifiedidx < 0 {
+		panic(fmt.Sprintf("index was less than zero, %v, value is: %f, minbin value is %f, binwidth is %f", intifiedidx, value, ih.minValue, ih.binWidth))
+	}
+	if intifiedidx > len(ih.bins) {
+		panic(fmt.Sprintf("index was greater than bin count, %v, value is: %f, minbin value is %f, binwidth is %f", intifiedidx, value, ih.minValue, ih.binWidth))
+	}
 	//increment by 1
-	ih.bins[int(index)] += 1 //truncation towards zero
+	ih.bins[intifiedidx] += 1 //truncation towards zero
 }
 func (ih *InlineHistogram) AddObservations(values []float64) {
 	for _, val := range values {
@@ -191,7 +198,9 @@ func (ih *InlineHistogram) BinStarts() []float64 {
 	}
 	return binStarts
 }
-
+func (ih *InlineHistogram) Mean() float64 {
+	return ih.pm.GetMean()
+}
 func (ih *InlineHistogram) StringSparse() string {
 	s := fmt.Sprintf("InlineHistogram:\nBinCount: %v\nBinWidth: %v\nObservations: %v\nMin: %f\nMax: %f\nMean: %f\n", len(ih.bins), ih.binWidth, ih.pm.sampleSize, ih.pm.min, ih.pm.max, ih.pm.GetMean())
 	s += "Bin Start, Count (bins with zero counts not reported!)\n"
