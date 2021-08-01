@@ -213,3 +213,43 @@ func TestBinCounts(t *testing.T) {
 		}
 	}
 }
+func Test_CDF(t *testing.T) {
+	ih := Init(1.0, 0.0, 5.0)
+	vals := []float64{-.5, .5, 1.5, 2.5, 3.5, 4.5}
+
+	for idx := range vals {
+		ih.AddObservation(vals[idx])
+	}
+	fmt.Printf("CDF(%f)=%f\n", -0.9999, ih.CDF(-0.9999))
+	for i := 0; i < len(vals); i++ {
+		fmt.Printf("CDF(%f)=%f\n", vals[i], ih.CDF(vals[i]))
+	}
+	fmt.Printf("CDF(%f)=%f\n", 4.9999, ih.CDF(4.9999))
+}
+func Test_INVCDF(t *testing.T) {
+	ih := Init(1.0, 0.0, 5.0)
+	vals := []float64{-.5, .5, 1.5, 2.5, 3.5, 4.5}
+	for i := 0; i < 5; i++ {
+		for idx := range vals {
+			ih.AddObservation(vals[idx])
+		}
+	}
+	incriment := (1.0 / float64(len(vals))) * .5
+	for i := 0; i < len(vals); i++ {
+		p := (float64(i) / float64(len(vals))) + incriment
+		fmt.Printf("InvCDF(%f)=%f\n", p, ih.InvCDF(p))
+	}
+	fmt.Printf("InvCDF(%f)=%f\n", .999, ih.InvCDF(.999))
+}
+func Test_INVCDF_CDF(t *testing.T) {
+	ih := Init(1.0, 0.0, 5.0)
+	vals := []float64{-.5, .5, 1.5, 2.5, 3.5, 4.5}
+	for i := 0; i < 10000; i++ {
+		for idx := range vals {
+			ih.AddObservation(vals[idx])
+		}
+	}
+	for i := 0; i < len(vals); i++ {
+		fmt.Printf("CDF(%f)=%f InvCDF(CDF(%f))=%f\n", vals[i], ih.CDF(vals[i]), vals[i], ih.InvCDF(ih.CDF(vals[i])))
+	}
+}

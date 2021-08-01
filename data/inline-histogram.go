@@ -82,8 +82,9 @@ func (ih *InlineHistogram) InvCDF(probability float64) float64 {
 			obs = ih.bins[idx]
 			cobs += obs
 		}
-		binOffset := float64(int64(idx+1)) - float64(int64(cobs)-numobs)/float64(obs)
-		return ih.minValue + ih.binWidth*(binOffset)
+		fraction := float64(int64(cobs)-numobs) / float64(obs)
+		binOffset := float64(int64(idx + 1))
+		return ih.minValue + ih.binWidth*(binOffset) - ih.binWidth*(fraction)
 	} else {
 		idx := len(ih.bins) - 1
 		obs := ih.bins[idx]
@@ -93,8 +94,9 @@ func (ih *InlineHistogram) InvCDF(probability float64) float64 {
 			obs = ih.bins[idx]
 			cobs -= obs
 		}
-		binOffset := float64(int64(len(ih.bins)-idx)) + float64(numobs-int64(cobs))/float64(obs)
-		return ih.maxValue - ih.binWidth*(binOffset)
+		fraction := float64(numobs-int64(cobs)) / float64(obs)
+		binOffset := float64(int64((len(ih.bins)) - idx))
+		return ih.maxValue - ih.binWidth*(binOffset) + ih.binWidth*(fraction)
 	}
 }
 func (ih *InlineHistogram) CDF(value float64) float64 {
@@ -114,6 +116,7 @@ func (ih *InlineHistogram) CDF(value float64) float64 {
 	val := float64(len(ih.bins)) / 2
 	if dIdx <= val {
 		idx := int64(math.Floor(dIdx))
+		diff := dIdx - float64(idx)
 		var cobs int64 = 0
 		var i int64 = 0
 		for i < idx {
@@ -121,9 +124,11 @@ func (ih *InlineHistogram) CDF(value float64) float64 {
 			i++
 		}
 		cobs += (int64(dIdx) - idx) * ih.bins[idx]
-		return float64(cobs) / float64(ih.pm.GetSampleSize())
+		fraction := (diff * float64(ih.bins[idx]))
+		return (float64(cobs) + fraction) / float64(ih.pm.GetSampleSize())
 	} else {
 		idx := int64(math.Floor(dIdx))
+		diff := dIdx - float64(idx)
 		var cobs int64 = ih.pm.GetSampleSize()
 		var i int64 = int64(len(ih.bins) - 1)
 		for i > idx {
@@ -131,7 +136,8 @@ func (ih *InlineHistogram) CDF(value float64) float64 {
 			i--
 		}
 		cobs -= (idx + 1 - int64(dIdx)) * ih.bins[idx]
-		return float64(cobs) / float64(ih.pm.GetSampleSize())
+		fraction := (diff * float64(ih.bins[idx]))
+		return (float64(cobs) + fraction) / float64(ih.pm.GetSampleSize())
 	}
 }
 func (ih *InlineHistogram) PDF(value float64) float64 {
