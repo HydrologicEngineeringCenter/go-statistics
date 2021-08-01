@@ -65,12 +65,21 @@ func (ih *InlineHistogram) AddObservations(values []float64) {
 func (ih *InlineHistogram) GetBins() []int64 {
 	return ih.bins
 }
+func (ih *InlineHistogram) Observations() int64 {
+	return ih.pm.GetSampleSize()
+}
+func (ih *InlineHistogram) Min() float64 {
+	return ih.pm.min
+}
+func (ih *InlineHistogram) Max() float64 {
+	return ih.pm.max
+}
 func (ih *InlineHistogram) InvCDF(probability float64) float64 {
 	if probability <= 0.0 {
-		return ih.minValue
+		return ih.pm.min
 	}
 	if probability >= 1.0 {
-		return ih.maxValue
+		return ih.pm.max
 	}
 	numobs := int64(float64(ih.pm.GetSampleSize()) * probability)
 	if probability <= 0.5 {
