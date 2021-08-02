@@ -81,6 +81,9 @@ func (ih *InlineHistogram) InvCDF(probability float64) float64 {
 	if probability >= 1.0 {
 		return ih.pm.max
 	}
+	if ih.pm.min == ih.pm.max {
+		return ih.pm.min
+	}
 	numobs := int64(float64(ih.pm.GetSampleSize()) * probability)
 	if probability <= 0.5 {
 		idx := 0
