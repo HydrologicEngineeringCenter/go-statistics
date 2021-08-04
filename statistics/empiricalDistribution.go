@@ -8,7 +8,7 @@ import (
 
 type EmpiricalDistribution struct {
 	binStarts []float64
-	binWidth  int64
+	binWidth  float64
 	binCounts []int64
 	minValue  float64
 	maxValue  float64
@@ -37,7 +37,7 @@ func Init(binstarts []float64, bincounts []int64) (*EmpiricalDistribution, error
 				return nil, errors.New("bin width must be constant")
 			}
 		}
-		w := int64(binstarts[1] - binstarts[0])
+		w := binstarts[1] - binstarts[0]
 		b := binstarts
 		c := bincounts
 		min := binstarts[0]
@@ -84,8 +84,9 @@ func (e *EmpiricalDistribution) InvCDF(probability float64) float64 {
 			obs = e.binCounts[idx]
 			cobs -= obs
 		}
-		binOffSet := float64(len(e.binCounts)-idx) + float64(numobs-cobs)/float64(obs)
-		return float64(e.maxValue) - float64(e.binWidth)*binOffSet
+		fraction := float64(numobs-int64(cobs)) / float64(obs)
+		binOffset := float64(int64((len(e.binCounts)) - idx))
+		return e.maxValue - e.binWidth*(binOffset) + e.binWidth*(fraction)
 	}
 }
 
@@ -136,7 +137,7 @@ func (e *EmpiricalDistribution) PDF(value float64) float64 {
 	if int(idx) > len(e.binCounts) {
 		return 0.0
 	}
-	return float64(e.binCounts[int64(idx)]) / float64(e.binWidth*e.GetSampleSize())
+	return float64(e.binCounts[int64(idx)]) / float64(e.binWidth*float64(e.GetSampleSize()))
 
 }
 
@@ -148,7 +149,7 @@ func (e *EmpiricalDistribution) String() string {
 	s := fmt.Sprintf("Empirical Distribution:\nBinCount: %v\nObservations: %v\nMin: %v\nMax: %v\nMean: %f\n", len(e.binStarts), e.GetSampleSize(), e.minValue, e.maxValue, e.CentralTendency())
 	s += "Bin Start, Count\n"
 	for idx, val := range e.binCounts {
-		s += fmt.Sprintf("%v, %v\n", e.minValue+float64((e.binWidth*int64(idx))), val)
+		s += fmt.Sprintf("%v, %v\n", e.minValue+float64((e.binWidth*float64(idx))), val)
 	}
 	return s
 }

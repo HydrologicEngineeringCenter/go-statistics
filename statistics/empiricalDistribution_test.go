@@ -30,13 +30,14 @@ func TestEmpiricalDistribution_InvCDF_above05(t *testing.T) {
 	binstarts := []float64{0, 1, 2, 3, 4}
 	bincounts := []int64{2, 3, 4, 3, 2}
 	e, _ := Init(binstarts, bincounts)
-	var expected float64 = 1.25
+	var expected float64 = 2.75
 	got := e.InvCDF(0.6)
 	diff := expected - got
 	if math.Abs(diff) > 0.00001 {
 		t.Errorf("InvCDF(0.6): %v; expected: %v", got, expected)
 	}
 }
+
 func TestEmpiricalDistribution_CDF(t *testing.T) {
 	binstarts := []float64{0, 1, 2, 3, 4}
 	bincounts := []int64{2, 3, 4, 3, 2}
