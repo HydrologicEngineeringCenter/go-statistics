@@ -76,7 +76,7 @@ func (e *EmpiricalDistribution) InvCDF(probability float64) float64 {
 		binOffSet := float64(idx+1) - float64(cobs-numobs)/float64(obs)
 		return float64(e.minValue) + float64(e.binWidth)*binOffSet
 	} else {
-		idx := len(e.binCounts)
+		idx := len(e.binCounts) - 1
 		obs := e.binCounts[idx]
 		cobs := e.GetSampleSize() - obs
 		for cobs > numobs {
