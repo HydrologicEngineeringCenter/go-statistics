@@ -2,8 +2,6 @@ package statistics
 
 import (
 	"math"
-
-	"gonum.org/v1/gonum/stat/distuv"
 )
 
 type PearsonIIIDistribution struct {
@@ -21,27 +19,21 @@ func (d PearsonIIIDistribution) InvCDF(probability float64) float64 {
 	}
 	noSkew := .00001
 	if math.Abs(d.Skew) < noSkew {
-		z := NormalDistribution{Mean: d.Mean, StandardDeviation: d.StandardDeviation}
+		z := zeroSkewDistribution(d)
 		return z.InvCDF(probability)
 	} else {
-		shift := 0.0
-		alpha := 4.0 / (d.Skew * d.Skew)
-		beta := .5 * d.StandardDeviation * d.Skew
 		if d.Skew > 0 {
-			shift = d.Mean - 2.0*d.StandardDeviation/d.Skew
-			g := distuv.Gamma{Alpha: alpha, Beta: 1.0 / beta}
-			return g.Quantile(probability) + shift
+
+			g := positiveSkewDistribution(d)
+			return g.InvCDF(probability)
 		} else {
-			beta = -beta
-			shift = -d.Mean + 2.0*d.StandardDeviation/d.Skew
-			g := distuv.Gamma{Alpha: alpha, Beta: 1.0 / beta}
-			return -(g.Quantile(1-probability) + shift)
+
+			g := negativeSkewDistribution(d)
+			return -g.InvCDF(1 - probability)
 		}
 	}
-
 }
 func (n PearsonIIIDistribution) CDF(value float64) float64 {
-
 	return 0.0
 }
 func (n PearsonIIIDistribution) PDF(value float64) float64 {
@@ -49,5 +41,21 @@ func (n PearsonIIIDistribution) PDF(value float64) float64 {
 	return 0.0
 }
 func (n PearsonIIIDistribution) CentralTendency() float64 {
-	return 0.0
+	return n.Mean
+}
+func zeroSkewDistribution(d PearsonIIIDistribution) ContinuousDistribution {
+	return NormalDistribution{Mean: d.Mean, StandardDeviation: d.StandardDeviation}
+}
+func negativeSkewDistribution(d PearsonIIIDistribution) ContinuousDistribution {
+	shift := -d.Mean + 2.0*d.StandardDeviation/d.Skew
+	alpha := 4.0 / (d.Skew * d.Skew)
+	beta := .5 * d.StandardDeviation * d.Skew
+	beta = -beta
+	return ShiftedGammaDistribution{Alpha: alpha, Beta: beta, Shift: shift}
+}
+func positiveSkewDistribution(d PearsonIIIDistribution) ContinuousDistribution {
+	alpha := 4.0 / (d.Skew * d.Skew)
+	beta := .5 * d.StandardDeviation * d.Skew
+	shift := d.Mean - 2.0*d.StandardDeviation/d.Skew
+	return ShiftedGammaDistribution{Alpha: alpha, Beta: beta, Shift: shift}
 }
