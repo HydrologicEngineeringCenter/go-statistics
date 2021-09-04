@@ -20,12 +20,14 @@ func (d ShiftedGammaDistribution) InvCDF(probability float64) float64 {
 	g := distuv.Gamma{Alpha: d.Alpha, Beta: 1.0 / d.Beta}
 	return g.Quantile(probability) + d.Shift
 }
-func (n ShiftedGammaDistribution) CDF(value float64) float64 {
-	return 0.0
+func (d ShiftedGammaDistribution) CDF(value float64) float64 {
+	g := distuv.Gamma{Alpha: d.Alpha, Beta: 1.0 / d.Beta}
+	v := value - d.Shift
+	return g.CDF(v)
 }
-func (n ShiftedGammaDistribution) PDF(value float64) float64 {
-
-	return 0.0
+func (d ShiftedGammaDistribution) PDF(value float64) float64 {
+	g := distuv.Gamma{Alpha: d.Alpha, Beta: 1.0 / d.Beta}
+	return g.Prob(value - d.Shift)
 }
 func (n ShiftedGammaDistribution) CentralTendency() float64 {
 	return .5

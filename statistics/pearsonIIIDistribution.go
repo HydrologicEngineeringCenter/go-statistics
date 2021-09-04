@@ -33,12 +33,39 @@ func (d PearsonIIIDistribution) InvCDF(probability float64) float64 {
 		}
 	}
 }
-func (n PearsonIIIDistribution) CDF(value float64) float64 {
-	return 0.0
-}
-func (n PearsonIIIDistribution) PDF(value float64) float64 {
+func (d PearsonIIIDistribution) CDF(value float64) float64 {
+	noSkew := .00001
+	if math.Abs(d.Skew) < noSkew {
+		z := zeroSkewDistribution(d)
+		return z.CDF(value)
+	} else {
+		if d.Skew > 0 {
 
-	return 0.0
+			g := positiveSkewDistribution(d)
+			return g.CDF(value)
+		} else {
+
+			g := negativeSkewDistribution(d)
+			return 1 - g.CDF(-value)
+		}
+	}
+}
+func (d PearsonIIIDistribution) PDF(value float64) float64 {
+	noSkew := .00001
+	if math.Abs(d.Skew) < noSkew {
+		z := zeroSkewDistribution(d)
+		return z.PDF(value)
+	} else {
+		if d.Skew > 0 {
+
+			g := positiveSkewDistribution(d)
+			return g.PDF(value)
+		} else {
+
+			g := negativeSkewDistribution(d)
+			return -g.PDF(value)
+		}
+	}
 }
 func (n PearsonIIIDistribution) CentralTendency() float64 {
 	return n.Mean

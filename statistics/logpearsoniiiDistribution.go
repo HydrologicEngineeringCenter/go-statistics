@@ -22,13 +22,13 @@ func (n LogPearsonIIIDistribution) InvCDF(probability float64) float64 {
 	return math.Pow(10, z.InvCDF(probability))
 }
 func (n LogPearsonIIIDistribution) CDF(value float64) float64 {
-
-	return 0.0
+	z := PearsonIIIDistribution{Mean: n.Mean, StandardDeviation: n.StandardDeviation, Skew: n.Skew}
+	return z.CDF(math.Log10(value))
 }
 func (n LogPearsonIIIDistribution) PDF(value float64) float64 {
-
-	return 0.0
+	z := PearsonIIIDistribution{Mean: n.Mean, StandardDeviation: n.StandardDeviation, Skew: n.Skew}
+	return z.PDF(math.Log10(value)) / value / math.Log(10)
 }
 func (n LogPearsonIIIDistribution) CentralTendency() float64 {
-	return 0.0
+	return n.Mean
 }
