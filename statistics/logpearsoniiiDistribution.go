@@ -2,6 +2,8 @@ package statistics
 
 import (
 	"math"
+
+	"github.com/HydrologicEngineeringCenter/go-statistics/data"
 )
 
 type LogPearsonIIIDistribution struct {
@@ -10,6 +12,15 @@ type LogPearsonIIIDistribution struct {
 	Skew              float64 `json:"skew"`
 }
 
+func (n *LogPearsonIIIDistribution) Fit(inputData []float64) {
+	pm := data.CreateProductMoments()
+	//TO DO: log data.
+	pm.AddObservations(inputData)
+	n.Mean = pm.GetMean()
+	n.StandardDeviation = pm.GetSampleVariance() //check to see if this is right
+	n.Skew = .4                                  //why not. TO DO: compute skew.
+
+}
 func (n LogPearsonIIIDistribution) InvCDF(probability float64) float64 {
 	if probability > 1 {
 		panic("nope")
