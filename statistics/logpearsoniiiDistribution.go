@@ -15,10 +15,14 @@ type LogPearsonIIIDistribution struct {
 func (n *LogPearsonIIIDistribution) Fit(inputData []float64) {
 	pm := data.CreateProductMoments()
 	//TO DO: log data.
-	pm.AddObservations(inputData)
+	logData := make([]float64, len(inputData))
+	for idx, v := range inputData {
+		logData[idx] = math.Log10(v)
+	}
+	pm.AddObservations(logData)
 	n.Mean = pm.GetMean()
 	n.StandardDeviation = pm.GetSampleVariance() //check to see if this is right
-	n.Skew = .4                                  //why not. TO DO: compute skew.
+	//n.Skew = n.Skew                                  //why not. TO DO: compute skew.
 
 }
 func (n LogPearsonIIIDistribution) InvCDF(probability float64) float64 {
