@@ -65,7 +65,7 @@ func TestBetaDistribution_PDF(t *testing.T) {
 		got := bd.PDF(probs[idx])
 		diff := expected[idx] - got
 		if math.Abs(diff) > .0000001 {
-			t.Errorf("InvCDF(%f) = %f; expected %f", probs[idx], got, expected[idx])
+			t.Errorf("PDF(%f) = %f; expected %f", probs[idx], got, expected[idx])
 		}
 	}
 }
