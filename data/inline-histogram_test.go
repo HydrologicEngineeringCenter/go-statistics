@@ -3,10 +3,7 @@ package data
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"testing"
-
-	"github.com/HydrologicEngineeringCenter/go-statistics/statistics"
 )
 
 func TestAddObservationBinData(t *testing.T) {
@@ -81,6 +78,8 @@ func TestAddObservationBelowLower(t *testing.T) {
 		}
 	}
 }
+
+/*
 func TestAddObservationNormalDist(t *testing.T) {
 	rand.Seed(1234)
 	ih := Init(.01, -1.0, 1.0)
@@ -168,7 +167,7 @@ func TestAddObservationNormalDistConvergenceMostStrict(t *testing.T) {
 	fmt.Println(fmt.Sprintf("variance %f", ih.pm.GetSampleVariance()))
 	fmt.Println(fmt.Sprintf("sample size %d", ih.pm.GetSampleSize()))
 }
-
+*/
 func TestBins(t *testing.T) {
 	ih := Init(1.0, 0.0, 5.0)
 	vals := []float64{-.5, .5, 1.5, 2.5, 3.5, 4.5}
