@@ -41,6 +41,28 @@ func Marshal(c ContinuousDistribution) (string, error) {
 	s += "]}"
 	return s, nil
 }
+func DistributionToString(c ContinuousDistribution) string {
+	ref := reflect.Indirect(reflect.ValueOf(c))
+	s := "{\"type\":\""
+	s += fmt.Sprintf("%v", reflect.TypeOf(c))
+	s += "\",\"parameters\":["
+	for i := 0; i < ref.NumField(); i++ {
+		s += "{\""
+		field := ref.Type().Field(i)
+		name := field.Name
+		s += name
+		s += "\":"
+		value := ref.Field(i)
+		s += fmt.Sprintf("%v", value)
+		if i < ref.NumField()-1 {
+			s += "},"
+		} else {
+			s += "}"
+		}
+	}
+	s += "]}"
+	return s
+}
 func Unmarshal(distribution string) (ContinuousDistribution, error) {
 	distribution = strings.Replace(distribution, "{\"type\":\"", "", 1)
 	structname := strings.Split(distribution, "\"")[0]
@@ -52,11 +74,19 @@ func Unmarshal(distribution string) (ContinuousDistribution, error) {
 	switch structname {
 	case "statistics.NormalDistribution":
 		c, err = parseDistribution(&NormalDistribution{}, params)
+	case "*statistics.NormalDistribution":
+		c, err = parseDistribution(&NormalDistribution{}, params)
 	case "statistics.TriangularDistribution":
+		c, err = parseDistribution(&TriangularDistribution{}, params)
+	case "*statistics.TriangularDistribution":
 		c, err = parseDistribution(&TriangularDistribution{}, params)
 	case "statistics.UniformDistribution":
 		c, err = parseDistribution(&UniformDistribution{}, params)
+	case "*statistics.UniformDistribution":
+		c, err = parseDistribution(&UniformDistribution{}, params)
 	case "statistics.LogNormalDistribution":
+		c, err = parseDistribution(&LogNormalDistribution{}, params)
+	case "*statistics.LogNormalDistribution":
 		c, err = parseDistribution(&LogNormalDistribution{}, params)
 	case "*statistics.DeterministicDistribution":
 		c, err = parseDistribution(&DeterministicDistribution{}, params)
