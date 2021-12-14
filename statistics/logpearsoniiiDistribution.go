@@ -2,6 +2,8 @@ package statistics
 
 import (
 	"math"
+
+	"github.com/HydrologicEngineeringCenter/go-statistics/data"
 )
 
 type LogPearsonIIIDistribution struct {
@@ -10,6 +12,19 @@ type LogPearsonIIIDistribution struct {
 	Skew              float64 `json:"skew"`
 }
 
+func (n *LogPearsonIIIDistribution) Fit(inputData []float64) {
+	pm := data.CreateProductMoments()
+	//TO DO: log data.
+	logData := make([]float64, len(inputData))
+	for idx, v := range inputData {
+		logData[idx] = math.Log10(v)
+	}
+	pm.AddObservations(logData)
+	n.Mean = pm.GetMean()
+	n.StandardDeviation = pm.GetSampleVariance() //check to see if this is right
+	//n.Skew = n.Skew                                  //why not. TO DO: compute skew.
+
+}
 func (n LogPearsonIIIDistribution) InvCDF(probability float64) float64 {
 	if probability > 1 {
 		panic("nope")
@@ -22,13 +37,13 @@ func (n LogPearsonIIIDistribution) InvCDF(probability float64) float64 {
 	return math.Pow(10, z.InvCDF(probability))
 }
 func (n LogPearsonIIIDistribution) CDF(value float64) float64 {
-
-	return 0.0
+	z := PearsonIIIDistribution{Mean: n.Mean, StandardDeviation: n.StandardDeviation, Skew: n.Skew}
+	return z.CDF(math.Log10(value))
 }
 func (n LogPearsonIIIDistribution) PDF(value float64) float64 {
-
-	return 0.0
+	z := PearsonIIIDistribution{Mean: n.Mean, StandardDeviation: n.StandardDeviation, Skew: n.Skew}
+	return z.PDF(math.Log10(value)) / value / math.Log(10)
 }
 func (n LogPearsonIIIDistribution) CentralTendency() float64 {
-	return 0.0
+	return n.Mean
 }

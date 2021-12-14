@@ -4,7 +4,7 @@ import "math"
 
 type NormalDistribution struct {
 	Mean              float64 `json:"mean"`
-	StandardDeviation float64 `json:"standarddeviation`
+	StandardDeviation float64 `json:"standarddeviation"`
 }
 
 func (n NormalDistribution) InvCDF(probability float64) float64 {

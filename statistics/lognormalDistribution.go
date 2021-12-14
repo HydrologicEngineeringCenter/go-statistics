@@ -5,8 +5,8 @@ import (
 )
 
 type LogNormalDistribution struct {
-	Mean              float64 `json:mean`
-	StandardDeviation float64 `json:standarddeviation`
+	Mean              float64 `json:"mean"`
+	StandardDeviation float64 `json:"standarddeviation"`
 }
 
 func (n LogNormalDistribution) InvCDF(probability float64) float64 {
