@@ -5,8 +5,8 @@ import (
 )
 
 type BetaDistribution struct {
-	Alpha float64
-	Beta  float64
+	Alpha float64 `json:"alpha"`
+	Beta  float64 `json:"beta"`
 }
 
 func (d BetaDistribution) InvCDF(probability float64) float64 {
