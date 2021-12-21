@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 type ContinuousDistribution interface {
@@ -24,7 +25,9 @@ type ContinuousDistributionContainer struct {
 
 func Marshal(c ContinuousDistribution) (string, error) {
 	s := "{\"type\":\""
-	s += fmt.Sprintf("%v", reflect.TypeOf(c))
+	stype := reflect.TypeOf(c)
+	typestringparts := strings.Split(stype.String(), ".")
+	s += fmt.Sprintf("%v", typestringparts[len(typestringparts)-1])
 	s += "\",\"parameters\":"
 	dist, err := json.Marshal(c)
 	if err != nil {
@@ -37,12 +40,15 @@ func Marshal(c ContinuousDistribution) (string, error) {
 func (c *ContinuousDistributionContainer) UnmarshalJSON(data []byte) error {
 	value, err := UnmarshalCustomValue(data, "type", "parameters",
 		map[string]reflect.Type{
-			"statistics.NormalDistribution":        reflect.TypeOf(NormalDistribution{}),
-			"statistics.LogNormalDistribution":     reflect.TypeOf(LogNormalDistribution{}),
-			"statistics.TriangularDistribution":    reflect.TypeOf(TriangularDistribution{}),
-			"statistics.UniformDistribution":       reflect.TypeOf(UniformDistribution{}),
-			"statistics.DeterministicDistribution": reflect.TypeOf(DeterministicDistribution{}),
-			"statistics.EmpiricalDistribution":     reflect.TypeOf(EmpiricalDistribution{}),
+			"NormalDistribution":        reflect.TypeOf(NormalDistribution{}),
+			"LogNormalDistribution":     reflect.TypeOf(LogNormalDistribution{}),
+			"TriangularDistribution":    reflect.TypeOf(TriangularDistribution{}),
+			"UniformDistribution":       reflect.TypeOf(UniformDistribution{}),
+			"DeterministicDistribution": reflect.TypeOf(DeterministicDistribution{}),
+			"EmpiricalDistribution":     reflect.TypeOf(EmpiricalDistribution{}),
+			"LogPearsonIIIDistribution": reflect.TypeOf(LogPearsonIIIDistribution{}),
+			"BetaDistribution":          reflect.TypeOf(BetaDistribution{}),
+			"ShiftedGammaDistribution":  reflect.TypeOf(ShiftedGammaDistribution{}),
 		})
 	if err != nil {
 		return err

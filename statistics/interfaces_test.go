@@ -76,4 +76,37 @@ func TestNormalEncoding(t *testing.T) {
 	s, _ = Marshal(cce.Value)
 	fmt.Printf("%v\n", s)
 
+	lp3 := LogPearsonIIIDistribution{Mean: 2, StandardDeviation: 1, Skew: 3}
+	slp3, _ := Marshal(lp3)
+	fmt.Printf("%v\n", slp3)
+	var cclp3 ContinuousDistributionContainer
+	err = json.Unmarshal([]byte(slp3), &cclp3)
+	if err != nil {
+		fmt.Println(err)
+	}
+	s, _ = Marshal(cclp3.Value)
+	fmt.Printf("%v\n", s)
+
+	b := BetaDistribution{Alpha: .5, Beta: .5}
+	sb, _ := Marshal(b)
+	fmt.Printf("%v\n", sb)
+	var ccb ContinuousDistributionContainer
+	err = json.Unmarshal([]byte(sb), &ccb)
+	if err != nil {
+		fmt.Println(err)
+	}
+	s, _ = Marshal(ccb.Value)
+	fmt.Printf("%v\n", s)
+
+	g := ShiftedGammaDistribution{Shift: .2, Alpha: .3, Beta: .5}
+	sg, _ := Marshal(g)
+	fmt.Printf("%v\n", sg)
+	var ccg ContinuousDistributionContainer
+	err = json.Unmarshal([]byte(sg), &ccg)
+	if err != nil {
+		fmt.Println(err)
+	}
+	s, _ = Marshal(ccg.Value)
+	fmt.Printf("%v\n", s)
+
 }
