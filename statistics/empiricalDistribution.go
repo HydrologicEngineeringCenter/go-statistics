@@ -7,34 +7,34 @@ import (
 )
 
 type EmpiricalDistribution struct {
-	binStarts []float64
-	binWidth  float64
-	binCounts []int64
-	minValue  float64
-	maxValue  float64
+	BinStarts []float64 `json:"binstarts"`
+	BinWidth  float64   `json:"binwidth"`
+	BinCounts []int64   `json:"bincounts"`
+	MinValue  float64   `json:"minvalue"`
+	MaxValue  float64   `json:"maxvalue"`
 }
 
-func Init(binstarts []float64, bincounts []int64) (*EmpiricalDistribution, error) {
+func Init(binstarts []float64, bincounts []int64) (EmpiricalDistribution, error) {
 	if len(binstarts) < 2 {
-		return nil, errors.New("there must be more than 1 bin hence more than 1 bin start")
+		return EmpiricalDistribution{}, errors.New("there must be more than 1 bin hence more than 1 bin start")
 	} else if len(bincounts) < 2 {
-		return nil, errors.New("there must be more than 1 bin hence more than 1 bin count")
+		return EmpiricalDistribution{}, errors.New("there must be more than 1 bin hence more than 1 bin count")
 	} else if len(binstarts) != len(bincounts) {
-		return nil, errors.New("the arrays must be the same size")
+		return EmpiricalDistribution{}, errors.New("the arrays must be the same size")
 	} else {
 		for bincount := range bincounts {
 			if bincount < 0 {
-				return nil, errors.New("bin counts can not be negative")
+				return EmpiricalDistribution{}, errors.New("bin counts can not be negative")
 			}
 		}
 		for i := 1; i < len(binstarts); i++ {
 			if binstarts[i-1] >= binstarts[i] {
-				return nil, errors.New("bin starts must be monotonically increasing")
+				return EmpiricalDistribution{}, errors.New("bin starts must be monotonically increasing")
 			}
 		}
 		for i := 1; i < len(binstarts)-1; i++ {
 			if binstarts[i]-binstarts[i-1] != binstarts[i+1]-binstarts[i] {
-				return nil, errors.New("bin width must be constant")
+				return EmpiricalDistribution{}, errors.New("bin width must be constant")
 			}
 		}
 		w := binstarts[1] - binstarts[0]
@@ -42,114 +42,114 @@ func Init(binstarts []float64, bincounts []int64) (*EmpiricalDistribution, error
 		c := bincounts
 		min := binstarts[0]
 		max := binstarts[len(binstarts)-1] + float64(w)
-		e := EmpiricalDistribution{binStarts: b, binWidth: w, binCounts: c, minValue: min, maxValue: max}
-		return &e, nil
+		e := EmpiricalDistribution{BinStarts: b, BinWidth: w, BinCounts: c, MinValue: min, MaxValue: max}
+		return e, nil
 	}
 }
 
-func (e *EmpiricalDistribution) GetSampleSize() int64 {
+func (e EmpiricalDistribution) GetSampleSize() int64 {
 	var sum int64
 	sum = 0
-	for i := 0; i < len(e.binCounts); i++ {
-		sum += int64(e.binCounts[i])
+	for i := 0; i < len(e.BinCounts); i++ {
+		sum += int64(e.BinCounts[i])
 	}
 	return sum
 }
 
-func (e *EmpiricalDistribution) InvCDF(probability float64) float64 {
+func (e EmpiricalDistribution) InvCDF(probability float64) float64 {
 	if probability <= 0.0 {
-		return float64(e.minValue)
+		return float64(e.MinValue)
 	}
 	if probability >= 1.0 {
-		return float64(e.maxValue)
+		return float64(e.MaxValue)
 	}
 	numobs := int64(float64(e.GetSampleSize()) * probability)
 	if probability <= 0.5 {
 		idx := 0
-		obs := e.binCounts[idx] // bin counts
+		obs := e.BinCounts[idx] // bin counts
 		cobs := obs
 		for cobs < numobs {
 			idx++
-			obs = e.binCounts[idx]
+			obs = e.BinCounts[idx]
 			cobs += obs
 		}
 		binOffSet := float64(idx+1) - float64(cobs-numobs)/float64(obs)
-		return float64(e.minValue) + float64(e.binWidth)*binOffSet
+		return float64(e.MinValue) + float64(e.BinWidth)*binOffSet
 	} else {
-		idx := len(e.binCounts) - 1
-		obs := e.binCounts[idx]
+		idx := len(e.BinCounts) - 1
+		obs := e.BinCounts[idx]
 		cobs := e.GetSampleSize() - obs
 		for cobs > numobs {
 			idx--
-			obs = e.binCounts[idx]
+			obs = e.BinCounts[idx]
 			cobs -= obs
 		}
 		fraction := float64(numobs-int64(cobs)) / float64(obs)
-		binOffset := float64(int64((len(e.binCounts)) - idx))
-		return e.maxValue - e.binWidth*(binOffset) + e.binWidth*(fraction)
+		binOffset := float64(int64((len(e.BinCounts)) - idx))
+		return e.MaxValue - e.BinWidth*(binOffset) + e.BinWidth*(fraction)
 	}
 }
 
-func (e *EmpiricalDistribution) CDF(value float64) float64 {
-	if value <= e.minValue {
+func (e EmpiricalDistribution) CDF(value float64) float64 {
+	if value <= e.MinValue {
 		return 0.0
 	}
-	if value >= e.maxValue {
+	if value >= e.MaxValue {
 		return 1.0
 	}
-	dIdx := (value - e.minValue) / float64(e.binWidth)
+	dIdx := (value - e.MinValue) / float64(e.BinWidth)
 	if dIdx <= 0 {
 		return 0.0
 	}
-	if int(dIdx) >= len(e.binCounts) {
+	if int(dIdx) >= len(e.BinCounts) {
 		return 1.0
 	}
-	val := float64(len(e.binCounts)) / 2
+	val := float64(len(e.BinCounts)) / 2
 	if dIdx <= val {
 		idx := int64(math.Floor(dIdx))
 		var cobs int64 = 0
 		var i int64 = 0
 		for i < idx {
-			cobs += e.binCounts[i]
+			cobs += e.BinCounts[i]
 			i++
 		}
-		cobs += (int64(dIdx) - idx) * e.binCounts[idx]
+		cobs += (int64(dIdx) - idx) * e.BinCounts[idx]
 		return float64(cobs) / float64(e.GetSampleSize())
 	} else {
 		idx := int64(math.Floor(dIdx))
 		var cobs int64 = e.GetSampleSize()
-		var i int64 = int64(len(e.binCounts) - 1)
+		var i int64 = int64(len(e.BinCounts) - 1)
 		for i > idx {
-			cobs -= e.binCounts[i]
+			cobs -= e.BinCounts[i]
 			i--
 		}
-		cobs -= (idx + 1 - int64(dIdx)) * e.binCounts[idx]
+		cobs -= (idx + 1 - int64(dIdx)) * e.BinCounts[idx]
 		return float64(cobs) / float64(e.GetSampleSize())
 
 	}
 }
 
-func (e *EmpiricalDistribution) PDF(value float64) float64 {
-	idx := (value - e.minValue) / float64(e.binWidth)
+func (e EmpiricalDistribution) PDF(value float64) float64 {
+	idx := (value - e.MinValue) / float64(e.BinWidth)
 	if idx < 0 {
 		return 0.0
 	}
-	if int(idx) > len(e.binCounts) {
+	if int(idx) > len(e.BinCounts) {
 		return 0.0
 	}
-	return float64(e.binCounts[int64(idx)]) / float64(e.binWidth*float64(e.GetSampleSize()))
+	return float64(e.BinCounts[int64(idx)]) / float64(e.BinWidth*float64(e.GetSampleSize()))
 
 }
 
-func (e *EmpiricalDistribution) CentralTendency() float64 {
+func (e EmpiricalDistribution) CentralTendency() float64 {
 	return e.InvCDF(0.5)
 }
 
-func (e *EmpiricalDistribution) String() string {
-	s := fmt.Sprintf("Empirical Distribution:\nBinCount: %v\nObservations: %v\nMin: %v\nMax: %v\nMean: %f\n", len(e.binStarts), e.GetSampleSize(), e.minValue, e.maxValue, e.CentralTendency())
+func (e EmpiricalDistribution) String() string {
+	s := fmt.Sprintf("Empirical Distribution:\nBinCount: %v\nObservations: %v\nMin: %v\nMax: %v\nMean: %f\n", len(e.BinStarts), e.GetSampleSize(), e.MinValue, e.MaxValue, e.CentralTendency())
 	s += "Bin Start, Count\n"
-	for idx, val := range e.binCounts {
-		s += fmt.Sprintf("%v, %v\n", e.minValue+float64((e.binWidth*float64(idx))), val)
+	for idx, val := range e.BinCounts {
+		s += fmt.Sprintf("%v, %v\n", e.MinValue+float64((e.BinWidth*float64(idx))), val)
 	}
 	return s
 }
