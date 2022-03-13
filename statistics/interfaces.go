@@ -15,9 +15,13 @@ type ContinuousDistribution interface {
 	CentralTendency() float64
 }
 type FittableDistribution interface {
-	Fit(inputData []float64) // could have an interface FittableDistribution or something like that
+	Fit(inputData []float64) ContinuousDistribution // could have an interface FittableDistribution or something like that
 }
-
+type BootstrappableDistribution interface{
+	FittableDistribution
+	ContinuousDistribution
+	Bootstrap(seed int64) ContinuousDistribution
+}
 type ContinuousDistributionContainer struct {
 	Type  string                 `json:"type"`
 	Value ContinuousDistribution `json:"parameters"`
