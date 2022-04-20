@@ -17,7 +17,7 @@ type ContinuousDistribution interface {
 type FittableDistribution interface {
 	Fit(inputData []float64) ContinuousDistribution // could have an interface FittableDistribution or something like that
 }
-type BootstrappableDistribution interface{
+type BootstrappableDistribution interface {
 	FittableDistribution
 	ContinuousDistribution
 	Bootstrap(seed int64) ContinuousDistribution
