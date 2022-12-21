@@ -33,6 +33,26 @@ func (p PairedData) SampleValue(inputValue interface{}) float64 {
 	a := p.Yvals[lower]
 	return a + slope*(xval-p.Xvals[lower])
 }
+
+//SampleYValue
+func (p PairedData) SampleYValue(yval float64) float64 {
+	if yval < p.Yvals[0] {
+		return 0.0 //yval is less than lowest x value
+	}
+	size := len(p.Xvals)
+	if yval >= p.Yvals[size-1] {
+		return p.Xvals[size-1] //yval yeilds largest x value
+	}
+	if yval == p.Yvals[0] {
+		return p.Xvals[0]
+	}
+	upper := sort.SearchFloat64s(p.Yvals, yval)
+	//interpolate
+	lower := upper - 1 //safe because we trapped the 0 case earlier
+	slope := (p.Xvals[upper] - p.Xvals[lower]) / (p.Yvals[upper] - p.Yvals[lower])
+	a := p.Yvals[lower]
+	return a + slope*(yval-p.Yvals[lower])
+}
 func (p PairedData) IsMonotonicallyIncreasing() bool {
 	monotonic := true
 	prevYval := p.Yvals[0]
@@ -61,11 +81,11 @@ func (p *PairedData) ForceMonotonicInRange(min float64, max float64) {
 	}
 	p.Yvals = update
 }
-func (f PairedData) Compose(g PairedData) PairedData{
+func (f PairedData) Compose(g PairedData) PairedData {
 	//assume that the x value of f is the y value of g
-	newY := make([]float64,0)
-	newX := make([]float64,0)
-	for idx, y := range g.Yvals{
+	newY := make([]float64, 0)
+	newX := make([]float64, 0)
+	for idx, y := range g.Yvals {
 		newY = append(newY, f.SampleValue(y))
 		newX = append(newX, g.Xvals[idx])
 	}
