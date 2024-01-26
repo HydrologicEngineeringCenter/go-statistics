@@ -50,7 +50,7 @@ func (p PairedData) SampleYValue(yval float64) float64 {
 	//interpolate
 	lower := upper - 1 //safe because we trapped the 0 case earlier
 	slope := (p.Xvals[upper] - p.Xvals[lower]) / (p.Yvals[upper] - p.Yvals[lower])
-	a := p.Yvals[lower]
+	a := p.Xvals[lower]
 	return a + slope*(yval-p.Yvals[lower])
 }
 func (p PairedData) IsMonotonicallyIncreasing() bool {
